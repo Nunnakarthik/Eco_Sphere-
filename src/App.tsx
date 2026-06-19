@@ -98,13 +98,15 @@ export default function App() {
       };
 
       // Check if they missed a consecutive day (streak breaker)
+      // Keeps streak if they logged a habit yesterday OR if they attempted the quiz yesterday
       const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-      const keepsStreak = state.lastActiveDate === yesterday && state.loggedActionsToday.length > 0;
+      const keepsStreak = state.lastActiveDate === yesterday && (state.loggedActionsToday.length > 0 || state.quizAttemptedToday);
 
       setState(prev => ({
         ...prev,
         history: [...prev.history, newHistoryEntry],
         loggedActionsToday: [], // Clear checklist
+        quizAttemptedToday: false, // Reset daily quiz task
         streak: keepsStreak ? prev.streak : 0, // Reset streak if they missed logging yesterday
         lastActiveDate: todayStr
       }));
@@ -112,7 +114,7 @@ export default function App() {
       // First visit ever
       setState(prev => ({ ...prev, lastActiveDate: todayStr }));
     }
-  }, [state.lastActiveDate, state.loggedActionsToday]);
+  }, [state.lastActiveDate, state.loggedActionsToday, state.quizAttemptedToday]);
 
   // Badge unlocking checks
   useEffect(() => {
@@ -149,8 +151,18 @@ export default function App() {
     }
 
     // 5. Scholar Badge (Quiz perfect score)
-    if (!state.unlockedBadgeIds.includes('scholar') && state.quizScore === 5) {
+    if (!state.unlockedBadgeIds.includes('scholar') && state.perfectQuizzesCount >= 1) {
       newlyUnlockedIds.push('scholar');
+    }
+
+    // 5b. Trivia Master Badge (Quiz attempts >= 3)
+    if (!state.unlockedBadgeIds.includes('trivia-master') && state.quizAttemptsCount >= 3) {
+      newlyUnlockedIds.push('trivia-master');
+    }
+
+    // 5c. Quiz Grandmaster Badge (Perfect score >= 3)
+    if (!state.unlockedBadgeIds.includes('grandmaster') && state.perfectQuizzesCount >= 3) {
+      newlyUnlockedIds.push('grandmaster');
     }
 
     // 6. Champion Badge (Streak >= 5 days or Points >= 100)
@@ -175,6 +187,8 @@ export default function App() {
     state.loggedActionsToday,
     state.history,
     state.quizScore,
+    state.perfectQuizzesCount,
+    state.quizAttemptsCount,
     state.streak,
     state.points,
     state.unlockedBadgeIds
@@ -241,14 +255,34 @@ export default function App() {
   // Handler for finishing the trivia quiz
   const handleQuizCompleted = (score: number) => {
     const isPerfect = score === 5;
-    const bonus = isPerfect ? 50 : 0; // +50 pts bonus for 100% quiz accuracy
+    const todayStr = new Date().toISOString().split('T')[0];
 
-    setState(prev => ({
-      ...prev,
-      quizCompleted: true,
-      quizScore: score,
-      points: prev.points + score * 10 + bonus // +10 points per correct answer + bonus
-    }));
+    setState(prev => {
+      let newStreak = prev.streak;
+
+      // If they haven't logged any actions today yet AND haven't attempted the quiz today yet
+      if (prev.loggedActionsToday.length === 0 && !prev.quizAttemptedToday) {
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        if (prev.lastActiveDate === yesterday) {
+          newStreak += 1;
+        } else if (prev.lastActiveDate !== todayStr) {
+          newStreak = 1; // start new streak
+        }
+      }
+
+      return {
+        ...prev,
+        quizCompleted: true,
+        quizScore: score,
+        quizAttemptedToday: true,
+        quizAttemptsCount: prev.quizAttemptsCount + 1,
+        perfectQuizzesCount: isPerfect ? prev.perfectQuizzesCount + 1 : prev.perfectQuizzesCount,
+        // Award exactly 1 point if they got all correct (isPerfect), otherwise 0
+        points: isPerfect ? prev.points + 1 : prev.points,
+        streak: newStreak,
+        lastActiveDate: todayStr
+      };
+    });
   };
 
   const handleResetQuiz = () => {

@@ -32,6 +32,8 @@ export const BADGES: Badge[] = [
   { id: 'chef', name: 'Green Chef', description: 'Logged plant-based meal actions 3 times', iconName: 'Leaf', unlocked: false },
   { id: 'energy', name: 'Energy Wizard', description: 'Logged standby power or cold wash actions 3 times', iconName: 'Zap', unlocked: false },
   { id: 'scholar', name: 'Climate Scholar', description: 'Scored 100% on the Eco-Quiz', iconName: 'GraduationCap', unlocked: false },
+  { id: 'trivia-master', name: 'Trivia Master', description: 'Completed the daily climate quiz 3 times', iconName: 'Compass', unlocked: false },
+  { id: 'grandmaster', name: 'Quiz Grandmaster', description: 'Scored perfectly (5/5) on the daily quiz 3 times', iconName: 'Award', unlocked: false },
   { id: 'champion', name: 'Eco Champion', description: 'Reached a streak of 5 days or earned 100 total points', iconName: 'Award', unlocked: false }
 ];
 
@@ -168,5 +170,8 @@ export const DEFAULT_APP_STATE: AppState = {
   history: [],
   quizCompleted: false,
   quizScore: null,
-  hasCalculated: false
+  hasCalculated: false,
+  quizAttemptedToday: false,
+  perfectQuizzesCount: 0,
+  quizAttemptsCount: 0
 };

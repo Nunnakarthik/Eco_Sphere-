@@ -62,4 +62,7 @@ export interface AppState {
   quizCompleted: boolean;
   quizScore: number | null;
   hasCalculated: boolean;
+  quizAttemptedToday: boolean;
+  perfectQuizzesCount: number;
+  quizAttemptsCount: number;
 }

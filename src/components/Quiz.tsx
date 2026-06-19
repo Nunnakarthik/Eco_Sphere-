@@ -105,11 +105,9 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
 
         <div style={{ fontSize: '1rem', color: 'var(--text-muted)', lineHeight: '1.6', maxWidth: '400px' }}>
           {isPerfect ? (
-            <p><strong>Perfect Score! Climate Scholar unlocked! 🎓</strong> You demonstrated exemplary knowledge on environmental math and carbon emissions.</p>
-          ) : scoreVal >= 3 ? (
-            <p><strong>Great work! 👍</strong> You have a strong foundational understanding of carbon footprint mechanics. Try again to get 5/5 and unlock the scholar badge!</p>
+            <p><strong>Perfect Score! +1 Eco Point earned! 🎓</strong> You completed today's quiz task and extended your active daily streak! 🔥</p>
           ) : (
-            <p><strong>Good try!</strong> Understanding emissions takes time. Click View Scientific Sources or review the explanations to boost your score.</p>
+            <p><strong>Quiz Task Completed!</strong> You extended your active daily streak! 🔥 Score 5/5 to earn exactly 1 Eco Point and unlock grandmaster achievements.</p>
           )}
         </div>
 
