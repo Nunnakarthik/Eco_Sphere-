@@ -95,6 +95,66 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     ],
     correctAnswer: 2,
     explanation: 'Devices on standby or "vampire power" account for 5% to 10% of standard household electric energy use, cost hundreds of dollars, and produce unnecessary carbon emissions.'
+  },
+  {
+    id: 6,
+    question: 'What percentage of food produced globally for human consumption is lost or wasted?',
+    options: [
+      'Roughly 5%',
+      'Roughly 15%',
+      'Roughly 33% (one-third)',
+      'Roughly 50% (half)'
+    ],
+    correctAnswer: 2,
+    explanation: 'According to the UN Food and Agriculture Organization (FAO), approximately one-third of all food produced globally goes to waste, generating about 8% of global greenhouse emissions.'
+  },
+  {
+    id: 7,
+    question: 'Which transport method has the highest carbon emissions per passenger-mile?',
+    options: [
+      'Standard passenger train',
+      'Domestic flight',
+      'Solo driving in a gasoline SUV',
+      'Electric vehicle'
+    ],
+    correctAnswer: 1,
+    explanation: 'Domestic flights emit the highest greenhouse gases per passenger-mile due to the high energy demand of takeoffs and high-altitude emissions.'
+  },
+  {
+    id: 8,
+    question: 'What does achieving "Net Zero carbon emissions" mean?',
+    options: [
+      'Eliminating all human greenhouse gas emissions completely',
+      'Balancing emitted carbon with an equivalent amount actively removed from the atmosphere',
+      'Reducing personal carbon footprints by exactly 50%',
+      'Transitioning to 100% solar energy'
+    ],
+    correctAnswer: 1,
+    explanation: 'Net Zero means achieving a balance between greenhouse gases produced and greenhouse gases taken out of the atmosphere (e.g. through carbon sinks like reforestation or carbon capture).'
+  },
+  {
+    id: 9,
+    question: 'How much carbon dioxide is released by burning one gallon of standard gasoline?',
+    options: [
+      'About 1.2 kg (2.6 lbs)',
+      'About 4.4 kg (9.8 lbs)',
+      'About 8.8 kg (19.6 lbs)',
+      'About 15 kg (33 lbs)'
+    ],
+    correctAnswer: 2,
+    explanation: 'Burning one gallon of gasoline releases approximately 8.8 kilograms (19.6 pounds) of CO2, as the carbon atoms in gasoline bond with oxygen atoms from the air during combustion.'
+  },
+  {
+    id: 10,
+    question: 'Which gas, emitted by food waste in landfills, is 28x more potent than CO2 over a 100-year scale?',
+    options: [
+      'Methane',
+      'Nitrous Oxide',
+      'Carbon Monoxide',
+      'Ozone'
+    ],
+    correctAnswer: 0,
+    explanation: 'Methane (CH4) is released during anaerobic decomposition of organic materials in landfills, having a global warming potential 28 times greater than carbon dioxide.'
   }
 ];
 

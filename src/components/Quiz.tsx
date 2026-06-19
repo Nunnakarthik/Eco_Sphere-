@@ -8,14 +8,22 @@ interface QuizProps {
   onResetQuiz: () => void;
 }
 
+function selectRandomQuestions(pool: typeof QUIZ_QUESTIONS, count: number): typeof QUIZ_QUESTIONS {
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
+}
+
 export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizProps) {
+  const [activeQuestions, setActiveQuestions] = useState(() => {
+    return selectRandomQuestions(QUIZ_QUESTIONS, 5);
+  });
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [localScore, setLocalScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(quizScore !== null);
 
-  const question = QUIZ_QUESTIONS[currentIdx];
+  const question = activeQuestions[currentIdx];
 
   const handleOptionClick = (idx: number) => {
     if (isSubmitted) return;
@@ -31,7 +39,7 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
   };
 
   const handleNext = () => {
-    if (currentIdx < QUIZ_QUESTIONS.length - 1) {
+    if (currentIdx < activeQuestions.length - 1) {
       setCurrentIdx(prev => prev + 1);
       setSelectedOpt(null);
       setIsSubmitted(false);
@@ -42,6 +50,7 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
   };
 
   const handleRestart = () => {
+    setActiveQuestions(selectRandomQuestions(QUIZ_QUESTIONS, 5));
     setCurrentIdx(0);
     setSelectedOpt(null);
     setIsSubmitted(false);
@@ -53,7 +62,7 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
   // Render final results view
   if (quizFinished) {
     const scoreVal = quizScore !== null ? quizScore : localScore;
-    const isPerfect = scoreVal === QUIZ_QUESTIONS.length;
+    const isPerfect = scoreVal === activeQuestions.length;
 
     return (
       <div 
@@ -125,7 +134,7 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
           Climate Trivia Quiz
         </span>
         <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--primary)', padding: '2px 8px', borderRadius: '50px', backgroundColor: 'var(--primary-light)' }}>
-          Question {currentIdx + 1} of {QUIZ_QUESTIONS.length}
+          Question {currentIdx + 1} of {activeQuestions.length}
         </span>
       </div>
 
@@ -229,7 +238,7 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
             onClick={handleNext}
             style={{ gap: '0.25rem' }}
           >
-            {currentIdx === QUIZ_QUESTIONS.length - 1 ? 'Finish Quiz' : 'Next Question'}
+            {currentIdx === activeQuestions.length - 1 ? 'Finish Quiz' : 'Next Question'}
             <ChevronRight size={16} />
           </button>
         )}
