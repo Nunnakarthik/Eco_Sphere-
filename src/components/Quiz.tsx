@@ -36,12 +36,8 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
       setSelectedOpt(null);
       setIsSubmitted(false);
     } else {
-      const finalScore = isSubmitted && selectedOpt === question.correctAnswer 
-        ? localScore + 1 
-        : localScore;
-      
       setQuizFinished(true);
-      onQuizCompleted(finalScore);
+      onQuizCompleted(localScore);
     }
   };
 
