@@ -10,6 +10,7 @@ import Tracker from './components/Tracker';
 import Simulator from './components/Simulator';
 import Quiz from './components/Quiz';
 import InfoModal from './components/InfoModal';
+import WelcomeScreen from './components/WelcomeScreen';
 
 // Icons
 import {
@@ -32,6 +33,9 @@ export default function App() {
     if (saved !== null) return saved === 'true';
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
+
+  // Welcome screen splash state
+  const [showWelcome, setShowWelcome] = useState<boolean>(true);
 
   // Global app state
   const [state, setState] = useState<AppState>(() => {
@@ -260,6 +264,14 @@ export default function App() {
   const totalDailySavings = ECO_ACTIONS
     .filter(action => state.loggedActionsToday.includes(action.id))
     .reduce((sum, action) => sum + action.co2Savings, 0);
+
+  if (showWelcome) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-app)', justifyContent: 'center' }}>
+        <WelcomeScreen onContinue={() => setShowWelcome(false)} />
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-app)' }}>
