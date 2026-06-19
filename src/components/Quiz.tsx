@@ -6,6 +6,7 @@ interface QuizProps {
   onQuizCompleted: (score: number) => void;
   quizScore: number | null;
   onResetQuiz: () => void;
+  quizAttemptedToday: boolean;
 }
 
 function selectRandomQuestions(pool: typeof QUIZ_QUESTIONS, count: number): typeof QUIZ_QUESTIONS {
@@ -13,9 +14,9 @@ function selectRandomQuestions(pool: typeof QUIZ_QUESTIONS, count: number): type
   return shuffled.slice(0, count);
 }
 
-export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizProps) {
+export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz, quizAttemptedToday }: QuizProps) {
   const [activeQuestions, setActiveQuestions] = useState(() => {
-    return selectRandomQuestions(QUIZ_QUESTIONS, 5);
+    return selectRandomQuestions(QUIZ_QUESTIONS, 1);
   });
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState<number | null>(null);
@@ -50,7 +51,7 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
   };
 
   const handleRestart = () => {
-    setActiveQuestions(selectRandomQuestions(QUIZ_QUESTIONS, 5));
+    setActiveQuestions(selectRandomQuestions(QUIZ_QUESTIONS, 1));
     setCurrentIdx(0);
     setSelectedOpt(null);
     setIsSubmitted(false);
@@ -99,7 +100,7 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
             {scoreVal}
           </span>
           <span style={{ fontSize: '1.5rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-            / {QUIZ_QUESTIONS.length}
+            / {activeQuestions.length}
           </span>
         </div>
 
@@ -107,18 +108,33 @@ export default function Quiz({ onQuizCompleted, quizScore, onResetQuiz }: QuizPr
           {isPerfect ? (
             <p><strong>Perfect Score! +1 Eco Point earned! 🎓</strong> You completed today's quiz task and extended your active daily streak! 🔥</p>
           ) : (
-            <p><strong>Quiz Task Completed!</strong> You extended your active daily streak! 🔥 Score 5/5 to earn exactly 1 Eco Point and unlock grandmaster achievements.</p>
+            <p><strong>Quiz Task Completed!</strong> You extended your active daily streak! 🔥 Score 1/1 to earn exactly 1 Eco Point and unlock grandmaster achievements.</p>
           )}
         </div>
 
-        <button 
-          className="btn btn-primary" 
-          onClick={handleRestart}
-          style={{ marginTop: '1rem', gap: '0.5rem' }}
-        >
-          <RefreshCw size={16} />
-          Retake Quiz
-        </button>
+        {quizAttemptedToday ? (
+          <div style={{
+            marginTop: '1rem',
+            padding: '0.625rem 1.25rem',
+            backgroundColor: 'var(--primary-light)',
+            color: 'var(--primary)',
+            borderRadius: 'var(--radius-sm)',
+            fontWeight: 600,
+            fontSize: '0.9rem',
+            border: '1px solid var(--primary)'
+          }}>
+            🏆 Daily Task Completed! Come back tomorrow.
+          </div>
+        ) : (
+          <button 
+            className="btn btn-primary" 
+            onClick={handleRestart}
+            style={{ marginTop: '1rem', gap: '0.5rem' }}
+          >
+            <RefreshCw size={16} />
+            Retake Quiz
+          </button>
+        )}
       </div>
     );
   }

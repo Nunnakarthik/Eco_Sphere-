@@ -611,6 +611,7 @@ export default function App() {
               onQuizCompleted={handleQuizCompleted}
               quizScore={state.quizScore}
               onResetQuiz={handleResetQuiz}
+              quizAttemptedToday={state.quizAttemptedToday}
             />
           )}
         </div>
