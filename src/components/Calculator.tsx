@@ -11,6 +11,13 @@ interface CalculatorProps {
 export default function Calculator({ inputs, onChange, onShowSources }: CalculatorProps) {
   const [activeSubTab, setActiveSubTab] = useState<'transport' | 'energy' | 'consumption'>('transport');
 
+  const getSliderStyle = (val: number, min: number, max: number) => {
+    const pct = ((val - min) / (max - min)) * 100;
+    return {
+      background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${pct}%, var(--border) ${pct}%, var(--border) 100%)`
+    };
+  };
+
   const handleSliderChange = (key: keyof UserInputs, val: number) => {
     onChange({
       ...inputs,
@@ -29,8 +36,20 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
     <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Your Habits Calculator</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Adjust sliders to recalculate your impact instantly</p>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Your Habits Calculator / అలవాట్ల కాలిక్యులేటర్ 🚗</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Adjust sliders to recalculate your impact instantly</p>
+          <div style={{
+            fontSize: '0.75rem',
+            backgroundColor: 'var(--primary-light)',
+            color: 'var(--primary)',
+            padding: '4px 10px',
+            borderRadius: '4px',
+            border: '1px solid var(--primary)',
+            display: 'inline-block',
+            fontWeight: 700
+          }}>
+            🎛️ Drag sliders to change your habits! / 🎛️ మీ అలవాట్లను మార్చడానికి స్లైడర్‌లను జరపండి!
+          </div>
         </div>
         <button 
           className="btn btn-secondary" 
@@ -160,6 +179,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
                 max="30000"
                 step="500"
                 value={inputs.carMiles}
+                style={getSliderStyle(inputs.carMiles, 0, 30000)}
                 onChange={(e) => handleSliderChange('carMiles', parseInt(e.target.value))}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
@@ -196,6 +216,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
                 max="40"
                 step="1"
                 value={inputs.publicTransit}
+                style={getSliderStyle(inputs.publicTransit, 0, 40)}
                 onChange={(e) => handleSliderChange('publicTransit', parseInt(e.target.value))}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
@@ -218,6 +239,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
                   max="15"
                   step="1"
                   value={inputs.flightsShort}
+                  style={getSliderStyle(inputs.flightsShort, 0, 15)}
                   onChange={(e) => handleSliderChange('flightsShort', parseInt(e.target.value))}
                 />
               </div>
@@ -234,6 +256,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
                   max="10"
                   step="1"
                   value={inputs.flightsLong}
+                  style={getSliderStyle(inputs.flightsLong, 0, 10)}
                   onChange={(e) => handleSliderChange('flightsLong', parseInt(e.target.value))}
                 />
               </div>
@@ -261,6 +284,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
                 max="1500"
                 step="25"
                 value={inputs.electricity}
+                style={getSliderStyle(inputs.electricity, 0, 1500)}
                 onChange={(e) => handleSliderChange('electricity', parseInt(e.target.value))}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
@@ -299,6 +323,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
                 max={inputs.heatingSource === 'electric' ? 1000 : 150}
                 step={inputs.heatingSource === 'electric' ? 25 : 5}
                 value={inputs.heatingUsage}
+                style={getSliderStyle(inputs.heatingUsage, 0, inputs.heatingSource === 'electric' ? 1000 : 150)}
                 onChange={(e) => handleSliderChange('heatingUsage', parseInt(e.target.value))}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>

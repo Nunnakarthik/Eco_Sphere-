@@ -173,5 +173,6 @@ export const DEFAULT_APP_STATE: AppState = {
   hasCalculated: false,
   quizAttemptedToday: false,
   perfectQuizzesCount: 0,
-  quizAttemptsCount: 0
+  quizAttemptsCount: 0,
+  userName: ''
 };

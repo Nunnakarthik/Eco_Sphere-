@@ -7,10 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test": "tsx test_runner.ts",
     "preview": "vite preview"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
+    "firebase": "^12.15.0",
     "lucide-react": "^1.21.0",
     "react": "^19.2.6",
     "react-chartjs-2": "^5.3.1",

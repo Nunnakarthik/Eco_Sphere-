@@ -65,4 +65,5 @@ export interface AppState {
   quizAttemptedToday: boolean;
   perfectQuizzesCount: number;
   quizAttemptsCount: number;
+  userName: string;
 }

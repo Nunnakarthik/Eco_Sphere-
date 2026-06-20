@@ -1,4 +1,16 @@
-# Logs
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production / Builds
+dist/
+dist-ssr/
+build/
+out/
+.tsbuildinfo
+
+# Debug/Logs
 logs
 *.log
 npm-debug.log*
@@ -7,18 +19,34 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Environment Variables & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+*.env
 
-# Editor directories and files
+# Editor / System Files
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+Thumbs.db
+
+# Test / Coverage
+coverage/
+*.lcov
+.eslintcache
+.stylelintcache
+
+# Firebase
+.firebase/
+firebase-debug.log*
+ui-debug.log*

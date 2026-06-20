@@ -11,8 +11,18 @@ export default function Simulator({ currentInputs }: SimulatorProps) {
   // Local state clone for target simulation behavior
   const [targetInputs, setTargetInputs] = useState<UserInputs>({ ...currentInputs });
 
+  const getSliderStyle = (val: number, min: number, max: number) => {
+    // Avoid division by zero
+    const range = max - min;
+    const pct = range > 0 ? ((val - min) / range) * 100 : 0;
+    return {
+      background: `linear-gradient(to right, var(--primary) 0%, var(--primary) ${pct}%, var(--border) ${pct}%, var(--border) 100%)`
+    };
+  };
+
   // Keep target in sync with current if current changes in calculator
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTargetInputs({ ...currentInputs });
   }, [currentInputs]);
 
@@ -45,8 +55,20 @@ export default function Simulator({ currentInputs }: SimulatorProps) {
       {/* Target Behaviors Controls */}
       <div className="card">
         <div style={{ marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Simulate Future Behaviors</h2>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Adjust sliders to simulate carbon savings if you make positive changes</p>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Simulate Future Behaviors / భవిష్యత్తు అలవాట్లు 📈</h2>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Adjust sliders to simulate carbon savings if you make positive changes</p>
+          <div style={{
+            fontSize: '0.75rem',
+            backgroundColor: 'var(--primary-light)',
+            color: 'var(--primary)',
+            padding: '4px 10px',
+            borderRadius: '4px',
+            border: '1px solid var(--primary)',
+            display: 'inline-block',
+            fontWeight: 700
+          }}>
+            🎛️ Drag sliders left to reduce usage and see savings! / 🎛️ భవిష్యత్తు ఆదాను లెక్కించడానికి స్లైడర్‌లను ఎడమ వైపు జరపండి!
+          </div>
         </div>
 
         <div style={{ display: 'grid', gap: '1.25rem' }}>
@@ -64,14 +86,16 @@ export default function Simulator({ currentInputs }: SimulatorProps) {
               id="sim-carMiles"
               type="range"
               min="0"
-              max={currentInputs.carMiles} // Can't select higher than current for simulation savings
+              max="30000"
               step="500"
               value={targetInputs.carMiles}
+              style={getSliderStyle(targetInputs.carMiles, 0, 30000)}
               onChange={(e) => handleSliderChange('carMiles', parseInt(e.target.value))}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
               <span>0 mi</span>
               <span>Current: {currentInputs.carMiles.toLocaleString()} mi</span>
+              <span>30,000 mi (Max)</span>
             </div>
           </div>
 
@@ -103,14 +127,16 @@ export default function Simulator({ currentInputs }: SimulatorProps) {
               id="sim-electricity"
               type="range"
               min="0"
-              max={currentInputs.electricity}
+              max="1500"
               step="25"
               value={targetInputs.electricity}
+              style={getSliderStyle(targetInputs.electricity, 0, 1500)}
               onChange={(e) => handleSliderChange('electricity', parseInt(e.target.value))}
             />
-            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
               <span>0 kWh</span>
               <span>Current: {currentInputs.electricity} kWh</span>
+              <span>1,500 kWh (Max)</span>
             </div>
           </div>
 
@@ -186,9 +212,25 @@ export default function Simulator({ currentInputs }: SimulatorProps) {
               transition: 'width 0.4s ease'
             }} />
           </div>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: co2SavedKg > 0 ? '0.75rem' : '0' }}>
             Target footprint: <strong>{targetBreakdown.totalTons} tons</strong> vs Current: <strong>{(currentTotal/1000).toFixed(2)} tons</strong>
           </span>
+
+          {co2SavedKg > 0 && (
+            <div style={{ 
+              padding: '0.65rem 0.85rem', 
+              backgroundColor: 'rgba(16, 185, 129, 0.08)', 
+              border: '1px dashed var(--primary)', 
+              borderRadius: 'var(--radius-sm)',
+              fontSize: '0.8rem',
+              color: 'var(--text-main)',
+              lineHeight: '1.4',
+              width: '100%',
+              textAlign: 'left'
+            }}>
+              💡 <strong>In Plain Words:</strong> By making these changes, you save the same weight of gas that <strong>{Math.round(co2SavedKg / 22)} mature trees</strong> absorb from the atmosphere in a whole year! 🌳
+            </div>
+          )}
         </div>
 
         {/* Equivalents Cards */}
