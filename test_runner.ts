@@ -150,6 +150,28 @@ function runTests() {
     assert(clampSimRes.co2SavedKg === 0, `Simulated negative savings clamped to 0 (expected 0, got ${clampSimRes.co2SavedKg} kg)`);
     assert(clampSimRes.treesEquivalent === 0, `Simulated negative tree equivalence clamped to 0 (expected 0, got ${clampSimRes.treesEquivalent})`);
 
+    // 7. Fallback Default Tests for Invalid Keys (Branch Coverage)
+    console.log('\n🔮 Running Fallback Default Key Tests...');
+    const fallbackInputs: UserInputs = {
+      carMiles: 10000,
+      carType: 'invalid-cartype', // defaults to 0.38
+      publicTransit: 0,
+      flightsShort: 0,
+      flightsLong: 0,
+      electricity: 0,
+      heatingSource: 'invalid-heat', // defaults to 5.3
+      heatingUsage: 10, // 10 * 12 * 5.3 = 636
+      dietType: 'invalid-diet', // defaults to 3.0 -> 3000
+      foodWaste: 'invalid-waste', // defaults to 1.0 -> 3000
+      shoppingHabits: 'invalid-shopping', // defaults to 2.2 -> 2200
+      recycling: 'invalid-recycling' // defaults to 1.0 -> 2200
+    };
+    const fallbackRes = calculateFootprint(fallbackInputs);
+    assert(fallbackRes.transport === 3800, `Fallback for invalid carType (expected 3800, got ${fallbackRes.transport})`);
+    assert(fallbackRes.energy === 636, `Fallback for invalid heatingSource (expected 636, got ${fallbackRes.energy})`);
+    assert(fallbackRes.food === 3000, `Fallback for invalid dietType/foodWaste (expected 3000, got ${fallbackRes.food})`);
+    assert(fallbackRes.shopping === 2200, `Fallback for invalid shoppingHabits/recycling (expected 2200, got ${fallbackRes.shopping})`);
+
   } catch (error) {
     console.error('💥 Test Execution Error: ', error);
     fails++;
