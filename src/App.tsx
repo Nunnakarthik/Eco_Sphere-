@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import type { AppState, UserInputs } from './types';
 import { DEFAULT_APP_STATE, ECO_ACTIONS, BADGES } from './utils/constants';
 import { calculateFootprint } from './utils/calculations';
@@ -32,28 +32,36 @@ import {
 
 // ── Confetti Burst Component ──────────────────────────────────────────────────
 const CONFETTI_COLORS = ['#10b981','#34d399','#f59e0b','#a78bfa','#38bdf8','#f43f5e','#fbbf24','#6ee7b7'];
-function ConfettiBurst({ active, onDone }: { active: boolean; onDone: () => void }) {
-  const particles = useRef<{ id: number; x: number; y: number; color: string; fallX: string; fallY: string; spin: string; dur: string }[]>([]);
+type ConfettiParticle = { id: number; x: number; y: number; color: string; fallX: string; fallY: string; spin: string; dur: string };
 
-  if (active && particles.current.length === 0) {
-    const cx = window.innerWidth / 2;
-    const cy = window.innerHeight / 3;
-    particles.current = Array.from({ length: 80 }, (_, i) => ({
-      id: i,
-      x: cx + (Math.random() - 0.5) * 60,
-      y: cy + (Math.random() - 0.5) * 30,
-      color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
-      fallX: `${(Math.random() - 0.5) * 320}px`,
-      fallY: `${120 + Math.random() * 280}px`,
-      spin: `${(Math.random() - 0.5) * 720}deg`,
-      dur: `${0.8 + Math.random() * 0.7}s`,
-    }));
-  }
-  if (!active) { particles.current = []; return null; }
+function ConfettiBurst({ active, onDone }: { active: boolean; onDone: () => void }) {
+  const [particles, setParticles] = useState<ConfettiParticle[]>([]);
+
+  useEffect(() => {
+    if (active) {
+      const cx = window.innerWidth / 2;
+      const cy = window.innerHeight / 3;
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setParticles(Array.from({ length: 80 }, (_, i) => ({
+        id: i,
+        x: cx + (Math.random() - 0.5) * 60,
+        y: cy + (Math.random() - 0.5) * 30,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        fallX: `${(Math.random() - 0.5) * 320}px`,
+        fallY: `${120 + Math.random() * 280}px`,
+        spin: `${(Math.random() - 0.5) * 720}deg`,
+        dur: `${0.8 + Math.random() * 0.7}s`,
+      })));
+    } else {
+      setParticles([]);
+    }
+  }, [active]);
+
+  if (!active || particles.length === 0) return null;
 
   return (
     <>
-      {particles.current.map(p => (
+      {particles.map(p => (
         <div
           key={p.id}
           className="confetti-particle"
@@ -162,6 +170,7 @@ export default function App() {
       if (lastWeekEntries.length > 0) {
         const totalHabits = lastWeekEntries.reduce((s, e) => s + (e.actionsLogged?.length || 0), 0);
         const totalCO2 = lastWeekEntries.reduce((s, e) => s + (e.dailySavings || 0), 0);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setWeeklySummary({ show: true, totalPoints: state.points, totalHabits, totalCO2 });
         localStorage.setItem(thisWeekKey, '1');
       }
@@ -273,10 +282,10 @@ export default function App() {
       // Find the name of the badge for notification
       const badgeDetails = BADGES.find(b => b.id === newlyUnlockedIds[0]);
       if (badgeDetails) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
+        /* eslint-disable react-hooks/set-state-in-effect */
         setBadgeToast(`🎉 Unlocked Achievement: "${badgeDetails.name}"!`);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setConfettiActive(true);
+        /* eslint-enable react-hooks/set-state-in-effect */
       }
 
       setState(prev => ({
