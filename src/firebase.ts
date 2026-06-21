@@ -19,12 +19,12 @@ import { getAnalytics } from 'firebase/analytics';
 
 // TODO: Configure your Firebase credentials here or using environment variables
 const firebaseConfig = {
-  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY || "YOUR_API_KEY",
-  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID || "YOUR_PROJECT_ID",
-  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "YOUR_MESSAGING_SENDER_ID",
-  appId:             import.meta.env.VITE_FIREBASE_APP_ID || "YOUR_APP_ID",
+  apiKey:            import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCgw1o9dpcFnQAZwpcvPvPZPKCrpl89BwM",
+  authDomain:        import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "ecosphere-app-5a4cb.firebaseapp.com",
+  projectId:         import.meta.env.VITE_FIREBASE_PROJECT_ID || "ecosphere-app-5a4cb",
+  storageBucket:     import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "ecosphere-app-5a4cb.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "742236367967",
+  appId:             import.meta.env.VITE_FIREBASE_APP_ID || "1:742236367967:web:ef4e49428370d1ac11ffea",
   measurementId:     import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-PK1TLQKKX7"
 };
 
