@@ -392,15 +392,7 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
           </button>
         </div>
 
-        {/* Footer tagline */}
-        <p style={{
-          textAlign: 'center',
-          fontSize: '0.75rem',
-          color: 'var(--text-muted)',
-          marginTop: '1.5rem'
-        }}>
-          🌍 Your data is encrypted and stored securely on Google Firebase.
-        </p>
+
 
       </div>
     </div>
