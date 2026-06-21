@@ -56,19 +56,34 @@ export interface FootprintBreakdown {
   totalTons: number;
 }
 
+/**
+ * Calculates the annual carbon footprint breakdown based on user inputs.
+ * Sanitizes all input fields to guarantee type safety and mathematically valid outputs.
+ * 
+ * @param inputs - The user's input habits (transport, energy, food, shopping).
+ * @returns An object containing sector breakdown (kg CO₂/yr), total kg, and total metric tons.
+ */
 export function calculateFootprint(inputs: UserInputs): FootprintBreakdown {
+  // Input sanitization: typecast to numbers, check for NaN, and clamp to non-negative boundaries
+  const carMiles = Math.max(0, Number(inputs.carMiles) || 0);
+  const publicTransit = Math.max(0, Number(inputs.publicTransit) || 0);
+  const flightsShort = Math.max(0, Number(inputs.flightsShort) || 0);
+  const flightsLong = Math.max(0, Number(inputs.flightsLong) || 0);
+  const electricity = Math.max(0, Number(inputs.electricity) || 0);
+  const heatingUsage = Math.max(0, Number(inputs.heatingUsage) || 0);
+
   // 1. Transportation
   const carFactor = EMISSION_FACTORS.carType[inputs.carType as keyof typeof EMISSION_FACTORS.carType] || 0.38;
-  const carEmissions = inputs.carMiles * carFactor;
-  const transitEmissions = inputs.publicTransit * 52 * EMISSION_FACTORS.publicTransitPerHour;
-  const flightEmissions = (inputs.flightsShort * EMISSION_FACTORS.flightShort) + 
-                            (inputs.flightsLong * EMISSION_FACTORS.flightLong);
+  const carEmissions = carMiles * carFactor;
+  const transitEmissions = publicTransit * 52 * EMISSION_FACTORS.publicTransitPerHour;
+  const flightEmissions = (flightsShort * EMISSION_FACTORS.flightShort) + 
+                            (flightsLong * EMISSION_FACTORS.flightLong);
   const transport = Math.round(carEmissions + transitEmissions + flightEmissions);
 
   // 2. Energy
-  const electricityEmissions = inputs.electricity * 12 * EMISSION_FACTORS.electricityPerKwh;
+  const electricityEmissions = electricity * 12 * EMISSION_FACTORS.electricityPerKwh;
   const heatingFactor = EMISSION_FACTORS.heatingSource[inputs.heatingSource as keyof typeof EMISSION_FACTORS.heatingSource] || 5.3;
-  const heatingEmissions = inputs.heatingUsage * 12 * heatingFactor;
+  const heatingEmissions = heatingUsage * 12 * heatingFactor;
   const energy = Math.round(electricityEmissions + heatingEmissions);
 
   // 3. Food (converts tons to kg)
@@ -94,7 +109,14 @@ export function calculateFootprint(inputs: UserInputs): FootprintBreakdown {
   };
 }
 
-// Compare current vs target for Simulator
+/**
+ * Calculates simulated CO₂ savings when moving from current inputs to target inputs.
+ * Ensures that savings are non-negative (target usage should not negatively impact savings).
+ * 
+ * @param current - The current lifestyle baseline inputs.
+ * @param target - The target lifestyle inputs to simulate.
+ * @returns Savings in kg, equivalents in trees, and car miles.
+ */
 export function calculateSimulatedSavings(
   current: UserInputs,
   target: UserInputs
@@ -102,6 +124,7 @@ export function calculateSimulatedSavings(
   const currentTotal = calculateFootprint(current).total;
   const targetTotal = calculateFootprint(target).total;
   
+  // Simulated savings cannot be negative (clamped to 0)
   const co2SavedKg = Math.max(0, currentTotal - targetTotal);
   
   // 1 mature tree absorbs ~22 kg CO2 per year

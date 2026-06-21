@@ -197,6 +197,15 @@ export default function Tracker({
                 key={action.id}
                 className="habit-row-item"
                 onClick={() => onToggleAction(action.id)}
+                role="checkbox"
+                aria-checked={isChecked}
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === ' ' || e.key === 'Enter') {
+                    e.preventDefault();
+                    onToggleAction(action.id);
+                  }
+                }}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -376,7 +385,7 @@ export default function Tracker({
                     opacity: isUnlocked ? 1 : 0.65,
                     transition: 'all 0.2s ease',
                     position: 'relative',
-                    cursor: 'pointer'
+                    cursor: 'default'
                   }}
                   title={badge.description}
                 >

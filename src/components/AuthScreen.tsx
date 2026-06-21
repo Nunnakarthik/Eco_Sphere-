@@ -12,6 +12,18 @@ interface AuthScreenProps {
 
 type AuthMode = 'signin' | 'signup';
 
+const srOnlyStyle: React.CSSProperties = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  padding: '0',
+  margin: '-1px',
+  overflow: 'hidden',
+  clip: 'rect(0, 0, 0, 0)',
+  whiteSpace: 'nowrap',
+  border: '0'
+};
+
 export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthScreenProps) {
   const {
     signInWithGoogle,
@@ -230,6 +242,7 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
             {/* Display Name — only on signup */}
             {mode === 'signup' && (
               <div style={{ position: 'relative' }}>
+                <label htmlFor="auth-displayname" style={srOnlyStyle}>Display Name</label>
                 <User size={16} style={{
                   position: 'absolute', left: '0.75rem', top: '50%',
                   transform: 'translateY(-50%)', color: 'var(--text-muted)'
@@ -257,6 +270,7 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
 
             {/* Email */}
             <div style={{ position: 'relative' }}>
+              <label htmlFor="auth-email" style={srOnlyStyle}>Email Address</label>
               <Mail size={16} style={{
                 position: 'absolute', left: '0.75rem', top: '50%',
                 transform: 'translateY(-50%)', color: 'var(--text-muted)'
@@ -283,6 +297,7 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
 
             {/* Password */}
             <div style={{ position: 'relative' }}>
+              <label htmlFor="auth-password" style={srOnlyStyle}>Password</label>
               <Lock size={16} style={{
                 position: 'absolute', left: '0.75rem', top: '50%',
                 transform: 'translateY(-50%)', color: 'var(--text-muted)'

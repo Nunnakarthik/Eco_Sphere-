@@ -37,6 +37,14 @@ function checkFirebaseConfigured(): boolean {
 // Compute once at module level — avoids re-running on every render
 const IS_FIREBASE_CONFIGURED = checkFirebaseConfigured();
 
+/**
+ * Custom React hook that encapsulates authentication operations.
+ * If Firebase is configured, it leverages real Firebase Auth functions (Google popup & email auth).
+ * If Firebase is not configured (e.g., local development or demo environments), it transparently
+ * falls back to a mock local storage authentication mechanism to allow full app audit capabilities.
+ * 
+ * @returns An object containing auth state, loading/error states, and auth trigger functions.
+ */
 export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<AuthUser | null>(() => {
     if (!IS_FIREBASE_CONFIGURED) {

@@ -95,6 +95,61 @@ function runTests() {
     assert(simRes.co2SavedKg === 2296, `Simulator savings calculations (expected 2296 kg, got ${simRes.co2SavedKg} kg)`);
     assert(simRes.treesEquivalent === 104.4, `Simulator trees saved (expected 104.4, got ${simRes.treesEquivalent})`);
 
+    // 6. Boundary, Sanitization, and Clamping Tests
+    console.log('\n🛡️ Running Input Sanitization & Clamping Boundary Tests...');
+    
+    // Test negative values are clamped to 0
+    const negativeInputs: UserInputs = {
+      ...mockUserInputs,
+      carMiles: -12000,
+      publicTransit: -10,
+      flightsShort: -2,
+      flightsLong: -1,
+      electricity: -500,
+      heatingUsage: -30
+    };
+    const negRes = calculateFootprint(negativeInputs);
+    assert(negRes.transport === 0, `Negative travel inputs clamped to 0 (expected 0, got ${negRes.transport} kg)`);
+    assert(negRes.energy === 0, `Negative energy inputs clamped to 0 (expected 0, got ${negRes.energy} kg)`);
+    
+    // Test NaN/undefined parameters default safely to 0
+    const nanInputs: UserInputs = {
+      ...mockUserInputs,
+      carMiles: NaN,
+      publicTransit: undefined as unknown as number,
+      flightsShort: "invalid" as unknown as number,
+      flightsLong: null as unknown as number,
+      electricity: NaN,
+      heatingUsage: undefined as unknown as number
+    };
+    const nanRes = calculateFootprint(nanInputs);
+    assert(nanRes.transport === 0, `NaN/undefined travel parameters default to 0 (expected 0, got ${nanRes.transport} kg)`);
+    assert(nanRes.energy === 0, `NaN/undefined energy parameters default to 0 (expected 0, got ${nanRes.energy} kg)`);
+    
+    // Test zero input values
+    const zeroInputs: UserInputs = {
+      ...mockUserInputs,
+      carMiles: 0,
+      publicTransit: 0,
+      flightsShort: 0,
+      flightsLong: 0,
+      electricity: 0,
+      heatingUsage: 0
+    };
+    const zeroRes = calculateFootprint(zeroInputs);
+    assert(zeroRes.transport === 0, `Zero travel inputs calculate to 0 (expected 0, got ${zeroRes.transport} kg)`);
+    assert(zeroRes.energy === 0, `Zero energy inputs calculate to 0 (expected 0, got ${zeroRes.energy} kg)`);
+
+    // Test simulated savings negative clamping (when target has HIGHER emissions than current)
+    const inefficientTargetInputs: UserInputs = {
+      ...mockUserInputs,
+      carMiles: 20000, // target is higher than current (10000)
+      dietType: 'heavy-meat' // target is higher emissions than current
+    };
+    const clampSimRes = calculateSimulatedSavings(mockUserInputs, inefficientTargetInputs);
+    assert(clampSimRes.co2SavedKg === 0, `Simulated negative savings clamped to 0 (expected 0, got ${clampSimRes.co2SavedKg} kg)`);
+    assert(clampSimRes.treesEquivalent === 0, `Simulated negative tree equivalence clamped to 0 (expected 0, got ${clampSimRes.treesEquivalent})`);
+
   } catch (error) {
     console.error('💥 Test Execution Error: ', error);
     fails++;
