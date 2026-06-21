@@ -55,7 +55,7 @@ export default function Simulator({ currentInputs }: SimulatorProps) {
       {/* Target Behaviors Controls */}
       <div className="card">
         <div style={{ marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Simulate Future Behaviors / భవిష్యత్తు అలవాట్లు 📈</h2>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Simulate Future Behaviors 📈</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Adjust sliders to simulate carbon savings if you make positive changes</p>
           <div style={{
             fontSize: '0.75rem',
@@ -67,7 +67,7 @@ export default function Simulator({ currentInputs }: SimulatorProps) {
             display: 'inline-block',
             fontWeight: 700
           }}>
-            🎛️ Drag sliders left to reduce usage and see savings! / 🎛️ భవిష్యత్తు ఆదాను లెక్కించడానికి స్లైడర్‌లను ఎడమ వైపు జరపండి!
+            🎛️ Drag sliders left to reduce usage and see savings!
           </div>
         </div>
 

@@ -163,7 +163,7 @@ export default function Tracker({
       {/* Habits Checklist */}
       <div className="card">
         <div style={{ marginBottom: '1.5rem' }}>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Daily Green Habits / రోజువారీ అలవాట్లు 🌿</h2>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Daily Green Habits 🌿</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Check actions you took today to reduce your footprint and earn points</p>
           <div style={{
             fontSize: '0.75rem',
@@ -175,7 +175,7 @@ export default function Tracker({
             display: 'inline-block',
             fontWeight: 700
           }}>
-            👉 Click checklist items to log savings! / 👉 కార్బన్ ఆదా చేయడానికి కింద ఉన్న అలవాట్లపై క్లిక్ చేయండి!
+            👉 Click checklist items to log savings!
           </div>
         </div>
 

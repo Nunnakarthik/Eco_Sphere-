@@ -63,6 +63,8 @@ interface DashboardProps {
   dailySavingsToday: number;
   userName: string;
   darkMode: boolean;
+  hasCalculated: boolean;
+  onNavigateToCalculator: () => void;
 }
 
 
@@ -80,7 +82,9 @@ export default function Dashboard({
   unlockedBadgesCount,
   dailySavingsToday,
   userName,
-  darkMode
+  darkMode,
+  hasCalculated,
+  onNavigateToCalculator
 }: DashboardProps) {
   const [offsetPercent, setOffsetPercent] = useState(0);
   const [selectedInsightTab, setSelectedInsightTab] = useState<string | null>(null);
@@ -229,6 +233,95 @@ export default function Dashboard({
       }
     }
   };
+
+  if (!hasCalculated) {
+    return (
+      <div style={{ display: 'grid', gap: '1.5rem' }}>
+        {/* ── Daily Eco Tip Card ───────────────────────────────────── */}
+        <div className="eco-tip-card">
+          <div style={{ flexShrink: 0, color: 'var(--primary)', marginTop: '2px' }}>
+            <Lightbulb size={20} />
+          </div>
+          <div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--primary)', letterSpacing: '0.5px', marginBottom: '3px' }}>Did You Know? — Eco Tip of the Day</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-main)', lineHeight: '1.5', fontWeight: 500 }}>{dailyTip}</div>
+          </div>
+        </div>
+
+        {/* ── Welcome / Baseline Assessment Hero Card ────────────────── */}
+        <div 
+          className="card" 
+          style={{ 
+            background: 'linear-gradient(135deg, var(--primary-light) 0%, rgba(16,185,129,0.02) 100%)', 
+            border: '1px dashed var(--primary)', 
+            padding: '2.5rem 2rem',
+            borderRadius: 'var(--radius-lg)',
+            textAlign: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: '1.25rem',
+            boxShadow: 'var(--shadow-md)',
+            animation: 'fadeIn 0.5s ease-out'
+          }}
+        >
+          <div style={{ backgroundColor: 'var(--primary)', padding: '1rem', borderRadius: '50%', color: 'white', display: 'inline-flex', boxShadow: '0 8px 20px rgba(16,185,129,0.3)' }}>
+            <Leaf size={32} />
+          </div>
+          <div>
+            <h2 style={{ fontSize: '1.6rem', fontWeight: 800, fontFamily: 'var(--font-heading)', color: 'var(--text-main)', margin: '0 0 0.5rem 0' }}>
+              Welcome to EcoSphere, {userName || 'Eco Friend'}! 🌿
+            </h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '520px', margin: '0 auto', lineHeight: '1.6' }}>
+              EcoSphere tracks your lifestyle and translates it into your personal carbon footprint score. Calculate your carbon baseline to activate your dashboard, unlock insights, and start tracking your green habits!
+            </p>
+          </div>
+          <button 
+            className="btn btn-primary"
+            onClick={onNavigateToCalculator}
+            style={{ padding: '0.8rem 1.75rem', fontSize: '1.05rem', fontWeight: 700, gap: '0.5rem', boxShadow: '0 4px 12px var(--primary-light)' }}
+          >
+            Calculate Your Carbon Baseline 🚗
+          </button>
+        </div>
+
+        {/* ── Accomplishments overview ───────────────────────────────── */}
+        <div className="grid grid-cols-3" style={{ gap: '1.25rem' }}>
+          
+          <div className="card" style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ backgroundColor: 'var(--primary-light)', padding: '0.55rem', borderRadius: 'var(--radius-sm)', color: 'var(--primary)', display: 'flex' }}>
+              <Leaf size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Daily Saved Today</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>{dailySavingsToday.toFixed(1)} kg CO₂</div>
+            </div>
+          </div>
+
+          <div className={`card ${streak > 0 ? 'streak-active-glow' : ''}`} style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem', transition: 'all 0.3s ease' }}>
+            <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)', padding: '0.55rem', borderRadius: 'var(--radius-sm)', color: '#f59e0b', display: 'flex' }}>
+              <Flame size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Habit Streak</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>{streak} {streak === 1 ? 'day' : 'days'} 🔥</div>
+            </div>
+          </div>
+
+          <div className="card" style={{ padding: '1rem 1.25rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <div style={{ backgroundColor: 'rgba(167, 139, 250, 0.1)', padding: '0.55rem', borderRadius: 'var(--radius-sm)', color: '#a78bfa', display: 'flex' }}>
+              <Award size={20} />
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Eco Badges</div>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--text-main)' }}>{unlockedBadgesCount} / 8 Unlocked</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: 'grid', gap: '1.5rem' }}>
@@ -383,7 +476,7 @@ export default function Dashboard({
             </div>
             <div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Eco Badges</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>{unlockedBadgesCount} / 6 Unlocked</div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700 }}>{unlockedBadgesCount} / 8 Unlocked</div>
             </div>
           </div>
 

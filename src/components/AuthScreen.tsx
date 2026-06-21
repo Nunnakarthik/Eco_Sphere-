@@ -118,24 +118,19 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
           animation: 'fadeIn 0.5s ease'
         }}>
 
-          {/* Firebase Not Configured Banner */}
+          {/* Firebase Offline/Demo Mode Banner */}
           {!isFirebaseConfigured && (
             <div style={{
               display: 'flex', alignItems: 'flex-start', gap: '0.75rem',
               padding: '0.85rem 1rem',
-              backgroundColor: 'rgba(245,158,11,0.1)',
-              border: '1px solid var(--warning)',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid var(--primary)',
               borderRadius: 'var(--radius-sm)',
               marginBottom: '1.25rem'
             }}>
-              <WifiOff size={16} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: '2px' }} />
+              <WifiOff size={16} style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '2px' }} />
               <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', lineHeight: '1.5' }}>
-                <strong>Firebase not configured yet.</strong> Auth buttons are disabled.
-                Set up your Firebase project and add your API keys to{' '}
-                <code style={{ fontSize: '0.75rem', backgroundColor: 'var(--bg-app)', padding: '1px 4px', borderRadius: '3px' }}>
-                  src/firebase.ts
-                </code>{' '}
-                to enable accounts. You can still <strong>Continue as Guest</strong> below.
+                <strong>Offline Demo Mode Active.</strong> Firebase is not configured yet. You can sign in with <strong>Continue with Google</strong> or use any mock email and password to instantly test the platform features locally.
               </div>
             </div>
           )}
@@ -184,7 +179,7 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
           <button
             id="google-signin-btn"
             onClick={handleGoogle}
-            disabled={!isFirebaseConfigured || isSubmitting}
+            disabled={isSubmitting}
             style={{
               width: '100%',
               padding: '0.75rem',
@@ -194,17 +189,16 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
               color: 'var(--text-main)',
               fontWeight: 700,
               fontSize: '0.9rem',
-              cursor: isFirebaseConfigured ? 'pointer' : 'not-allowed',
+              cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '0.6rem',
               transition: 'all 0.2s ease',
-              opacity: isFirebaseConfigured ? 1 : 0.5,
+              opacity: 1,
               marginBottom: '1rem'
             }}
             onMouseEnter={e => {
-              if (!isFirebaseConfigured) return;
               (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--primary)';
               (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--primary-light)';
             }}
@@ -346,7 +340,7 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
             <button
               id="auth-submit-btn"
               type="submit"
-              disabled={!isFirebaseConfigured || isSubmitting}
+              disabled={isSubmitting}
               className="btn btn-primary"
               style={{
                 width: '100%',
@@ -354,8 +348,8 @@ export default function AuthScreen({ auth: authHook, onContinueAsGuest }: AuthSc
                 fontSize: '0.95rem',
                 fontWeight: 700,
                 gap: '0.5rem',
-                opacity: isFirebaseConfigured ? 1 : 0.5,
-                cursor: isFirebaseConfigured ? 'pointer' : 'not-allowed'
+                opacity: 1,
+                cursor: 'pointer'
               }}
             >
               {isSubmitting ? (

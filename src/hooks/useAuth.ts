@@ -38,7 +38,19 @@ function checkFirebaseConfigured(): boolean {
 const IS_FIREBASE_CONFIGURED = checkFirebaseConfigured();
 
 export function useAuth(): UseAuthReturn {
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(() => {
+    if (!IS_FIREBASE_CONFIGURED) {
+      const saved = localStorage.getItem('ecosphere_mock_user');
+      if (saved) {
+        try {
+          return JSON.parse(saved);
+        } catch {
+          return null;
+        }
+      }
+    }
+    return null;
+  });
   // If Firebase is not configured, we are not loading — skip auth entirely
   const [authLoading, setAuthLoading] = useState(!IS_FIREBASE_CONFIGURED ? false : true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -79,7 +91,19 @@ export function useAuth(): UseAuthReturn {
   };
 
   const signInWithGoogle = async () => {
-    if (!isFirebaseConfigured) return;
+    if (!isFirebaseConfigured) {
+      setAuthError(null);
+      const mockGoogleUser = {
+        uid: 'mock-google-uid-123',
+        displayName: 'Eco Friend',
+        email: 'eco.friend@gmail.com',
+        photoURL: null,
+        emailVerified: true
+      } as unknown as AuthUser;
+      setUser(mockGoogleUser);
+      localStorage.setItem('ecosphere_mock_user', JSON.stringify(mockGoogleUser));
+      return;
+    }
     try {
       setAuthError(null);
       await signInWithPopup(auth, googleProvider);
@@ -90,7 +114,19 @@ export function useAuth(): UseAuthReturn {
   };
 
   const signInWithEmail = async (email: string, password: string) => {
-    if (!isFirebaseConfigured) return;
+    if (!isFirebaseConfigured) {
+      setAuthError(null);
+      const mockEmailUser = {
+        uid: 'mock-email-uid-456',
+        displayName: email.split('@')[0],
+        email: email,
+        photoURL: null,
+        emailVerified: true
+      } as unknown as AuthUser;
+      setUser(mockEmailUser);
+      localStorage.setItem('ecosphere_mock_user', JSON.stringify(mockEmailUser));
+      return;
+    }
     try {
       setAuthError(null);
       await signInWithEmailAndPassword(auth, email, password);
@@ -101,7 +137,19 @@ export function useAuth(): UseAuthReturn {
   };
 
   const signUpWithEmail = async (email: string, password: string, displayName: string) => {
-    if (!isFirebaseConfigured) return;
+    if (!isFirebaseConfigured) {
+      setAuthError(null);
+      const mockEmailUser = {
+        uid: 'mock-email-uid-456',
+        displayName: displayName.trim() || email.split('@')[0],
+        email: email,
+        photoURL: null,
+        emailVerified: true
+      } as unknown as AuthUser;
+      setUser(mockEmailUser);
+      localStorage.setItem('ecosphere_mock_user', JSON.stringify(mockEmailUser));
+      return;
+    }
     try {
       setAuthError(null);
       const credential = await createUserWithEmailAndPassword(auth, email, password);
@@ -115,7 +163,11 @@ export function useAuth(): UseAuthReturn {
   };
 
   const signOut = async () => {
-    if (!isFirebaseConfigured) return;
+    if (!isFirebaseConfigured) {
+      setUser(null);
+      localStorage.removeItem('ecosphere_mock_user');
+      return;
+    }
     try {
       await firebaseSignOut(auth);
       setUser(null);

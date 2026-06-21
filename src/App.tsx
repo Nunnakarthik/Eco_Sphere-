@@ -793,6 +793,8 @@ export default function App() {
               dailySavingsToday={totalDailySavings}
               userName={state.userName}
               darkMode={darkMode}
+              hasCalculated={state.hasCalculated}
+              onNavigateToCalculator={() => setActiveTab('calculator')}
             />
           )}
 

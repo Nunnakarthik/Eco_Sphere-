@@ -7,62 +7,38 @@ interface WelcomeScreenProps {
 }
 
 const content = {
-  en: {
-    title: 'Welcome to EcoSphere',
-    returningTitle: 'Welcome back, {name}! 🌿',
-    quote: '"We do not inherit the Earth from our ancestors; we borrow it from our children."',
-    quoteAuthor: '— Native American Proverb',
-    ecoTipsTitle: 'Daily Eco Tips',
-    saveWaterTitle: 'Save water:',
-    saveWaterText: 'Keep taps closed, repair minor leaks, and preserve water resources.',
-    plantTreesTitle: 'Plant trees:',
-    plantTreesText: 'Grow native trees and vegetation to naturally clean the air.',
-    conserveElectricityTitle: 'Conserve electricity:',
-    conserveElectricityText: 'Turn off lights and unplug chargers when not in use.',
-    nameLabel: 'What should we call you? (e.g., Sarah)',
-    nameLabelReturning: 'Confirm your display name:',
-    placeholder: 'Enter your display name',
-    btnGetStarted: 'Get Started',
-    btnContinue: 'Continue to Dashboard',
-    selectLanguage: 'Language / భాష:'
-  },
-  te: {
-    title: 'ఎకోస్పియర్ (EcoSphere) కు స్వాగతం',
-    returningTitle: 'తిరిగి స్వాగతం, {name}! 🌿',
-    quote: '"మనం మన భూమిని మన పూర్వీకుల నుండి వారసత్వంగా పొందలేదు; మన పిల్లల నుండి అప్పుగా తీసుకున్నాము."',
-    quoteAuthor: '— స్థానిక అమెరికన్ సామెత',
-    ecoTipsTitle: 'పర్యావరణ చిట్కాలు',
-    saveWaterTitle: 'నీటిని ఆదా చేయండి:',
-    saveWaterText: 'టాప్‌లను మూసి ఉంచండి, లీక్‌లను ఆపండి, నీటిని వృధా చేయకండి.',
-    plantTreesTitle: 'చెట్లను నాటండి:',
-    plantTreesText: 'గాలిని శుభ్రపరచడానికి మన ప్రాంతపు మొక్కలను నాటండి.',
-    conserveElectricityTitle: 'కరెంట్ పొదుపు చేయండి:',
-    conserveElectricityText: 'అవసరం లేనప్పుడు లైట్లు ఆర్పండి మరియు ప్లగ్‌లను తీసివేయండి.',
-    nameLabel: 'మిమ్మల్ని ఏమని పిలవాలి? (ఉదాహరణకు: కార్తీక్)',
-    nameLabelReturning: 'మీ పేరును నిర్ధారించండి:',
-    placeholder: 'మీ పేరును ఇక్కడ రాయండి',
-    btnGetStarted: 'మొదలుపెడదాం',
-    btnContinue: 'డ్యాష్‌బోర్డ్‌కు వెళ్ళండి',
-    selectLanguage: 'Language / భాష:'
-  }
+  title: 'Welcome to EcoSphere',
+  returningTitle: 'Welcome back, {name}! 🌿',
+  quote: '"We do not inherit the Earth from our ancestors; we borrow it from our children."',
+  quoteAuthor: '— Native American Proverb',
+  ecoTipsTitle: 'Daily Eco Tips',
+  saveWaterTitle: 'Save water:',
+  saveWaterText: 'Keep taps closed, repair minor leaks, and preserve water resources.',
+  plantTreesTitle: 'Plant trees:',
+  plantTreesText: 'Grow native trees and vegetation to naturally clean the air.',
+  conserveElectricityTitle: 'Conserve electricity:',
+  conserveElectricityText: 'Turn off lights and unplug chargers when not in use.',
+  nameLabel: 'What should we call you? (e.g., Sarah)',
+  nameLabelReturning: 'Confirm your display name:',
+  placeholder: 'Enter your display name',
+  btnGetStarted: 'Get Started',
+  btnContinue: 'Continue to Dashboard'
 };
 
 export default function WelcomeScreen({ defaultName = '', onContinue }: WelcomeScreenProps) {
   const [name, setName] = useState(defaultName);
-  const [lang, setLang] = useState<'en' | 'te'>('en');
 
   const isReturningUser = Boolean(defaultName);
-  const activeContent = content[lang];
 
   const handleSubmit = () => {
-    onContinue(name.trim() || defaultName || (lang === 'en' ? 'Eco Friend' : 'స్నేహితుడు'));
+    onContinue(name.trim() || defaultName || 'Eco Friend');
   };
 
   const getGreetingTitle = () => {
     if (isReturningUser) {
-      return activeContent.returningTitle.replace('{name}', defaultName);
+      return content.returningTitle.replace('{name}', defaultName);
     }
-    return activeContent.title;
+    return content.title;
   };
 
   return (
@@ -91,55 +67,8 @@ export default function WelcomeScreen({ defaultName = '', onContinue }: WelcomeS
           animation: 'fadeIn 0.5s ease-out'
         }}
       >
-        {/* Language Switcher on top */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          alignSelf: 'stretch',
-          justifyContent: 'flex-end',
-          paddingBottom: '0.25rem',
-          borderBottom: '1px solid var(--border)'
-        }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--text-muted)' }}>
-            {activeContent.selectLanguage}
-          </span>
-          <div style={{ display: 'flex', gap: '0.25rem' }}>
-            <button
-              onClick={() => setLang('en')}
-              style={{
-                padding: '0.2rem 0.5rem',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                borderRadius: '12px',
-                border: lang === 'en' ? '2px solid var(--primary)' : '1px solid var(--border)',
-                backgroundColor: lang === 'en' ? 'var(--primary-light)' : 'transparent',
-                color: 'var(--text-main)',
-                cursor: 'pointer'
-              }}
-            >
-              English 🇬🇧
-            </button>
-            <button
-              onClick={() => setLang('te')}
-              style={{
-                padding: '0.2rem 0.5rem',
-                fontSize: '0.7rem',
-                fontWeight: 700,
-                borderRadius: '12px',
-                border: lang === 'te' ? '2px solid var(--primary)' : '1px solid var(--border)',
-                backgroundColor: lang === 'te' ? 'var(--primary-light)' : 'transparent',
-                color: 'var(--text-main)',
-                cursor: 'pointer'
-              }}
-            >
-              తెలుగు 🇮🇳
-            </button>
-          </div>
-        </div>
-
         {/* Brand */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center', marginTop: '0.5rem' }}>
           <Trees style={{ color: 'var(--primary)' }} size={24} />
           <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, fontFamily: 'var(--font-heading)' }}>
             {getGreetingTitle()}
@@ -158,9 +87,9 @@ export default function WelcomeScreen({ defaultName = '', onContinue }: WelcomeS
             maxWidth: '440px'
           }}
         >
-          {activeContent.quote}
+          {content.quote}
           <span style={{ display: 'block', fontSize: '0.75rem', fontStyle: 'normal', color: 'var(--text-muted)', marginTop: '0.15rem', fontWeight: 600 }}>
-            {activeContent.quoteAuthor}
+            {content.quoteAuthor}
           </span>
         </blockquote>
 
@@ -196,27 +125,27 @@ export default function WelcomeScreen({ defaultName = '', onContinue }: WelcomeS
           }}
         >
           <h3 style={{ fontSize: '0.8rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.5px', margin: '0 0 0.15rem 0' }}>
-            {activeContent.ecoTipsTitle}
+            {content.ecoTipsTitle}
           </h3>
 
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
             <Droplet size={15} style={{ color: 'var(--accent)', flexShrink: 0, marginTop: '1px' }} />
             <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', lineHeight: '1.3' }}>
-              <strong>{activeContent.saveWaterTitle}</strong> {activeContent.saveWaterText}
+              <strong>{content.saveWaterTitle}</strong> {content.saveWaterText}
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
             <Trees size={15} style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '1px' }} />
             <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', lineHeight: '1.3' }}>
-              <strong>{activeContent.plantTreesTitle}</strong> {activeContent.plantTreesText}
+              <strong>{content.plantTreesTitle}</strong> {content.plantTreesText}
             </div>
           </div>
 
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start' }}>
             <Zap size={15} style={{ color: 'var(--warning)', flexShrink: 0, marginTop: '1px' }} />
             <div style={{ fontSize: '0.8rem', color: 'var(--text-main)', lineHeight: '1.3' }}>
-              <strong>{activeContent.conserveElectricityTitle}</strong> {activeContent.conserveElectricityText}
+              <strong>{content.conserveElectricityTitle}</strong> {content.conserveElectricityText}
             </div>
           </div>
         </div>
@@ -224,13 +153,13 @@ export default function WelcomeScreen({ defaultName = '', onContinue }: WelcomeS
         {/* Name Input */}
         <div style={{ width: '100%', textAlign: 'left' }}>
           <label htmlFor="name-input" style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '0.35rem' }}>
-            {isReturningUser ? activeContent.nameLabelReturning : activeContent.nameLabel}
+            {isReturningUser ? content.nameLabelReturning : content.nameLabel}
           </label>
           <input
             id="name-input"
             type="text"
             className="form-control"
-            placeholder={activeContent.placeholder}
+            placeholder={content.placeholder}
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={18}
@@ -263,7 +192,7 @@ export default function WelcomeScreen({ defaultName = '', onContinue }: WelcomeS
           }}
           aria-label="Continue to main carbon tracking dashboard"
         >
-          {isReturningUser ? activeContent.btnContinue : activeContent.btnGetStarted}
+          {isReturningUser ? content.btnContinue : content.btnGetStarted}
           <ChevronRight size={16} />
         </button>
 

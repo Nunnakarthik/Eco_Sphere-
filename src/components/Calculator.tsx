@@ -36,7 +36,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
     <div className="card" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div>
-          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Your Habits Calculator / అలవాట్ల కాలిక్యులేటర్ 🚗</h2>
+          <h2 style={{ fontSize: '1.4rem', fontWeight: 600 }}>Your Habits Calculator 🚗</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '0.5rem' }}>Adjust sliders to recalculate your impact instantly</p>
           <div style={{
             fontSize: '0.75rem',
@@ -48,7 +48,7 @@ export default function Calculator({ inputs, onChange, onShowSources }: Calculat
             display: 'inline-block',
             fontWeight: 700
           }}>
-            🎛️ Drag sliders to change your habits! / 🎛️ మీ అలవాట్లను మార్చడానికి స్లైడర్‌లను జరపండి!
+            🎛️ Drag sliders to change your habits!
           </div>
         </div>
         <button 
