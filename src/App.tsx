@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { AppState, UserInputs } from './types';
 import { DEFAULT_APP_STATE, ECO_ACTIONS, BADGES } from './utils/constants';
 import { calculateFootprint } from './utils/calculations';
@@ -86,6 +86,62 @@ export default function App() {
   const [weeklySummary, setWeeklySummary] = useState<{
     show: boolean; totalPoints: number; totalHabits: number; totalCO2: number;
   } | null>(null);
+  const weeklySummaryRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!weeklySummary?.show) return;
+
+    const previousActiveElement = document.activeElement as HTMLElement;
+
+    const timer = setTimeout(() => {
+      if (weeklySummaryRef.current) {
+        const focusable = weeklySummaryRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length > 0) {
+          focusable[0].focus();
+        }
+      }
+    }, 50);
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setWeeklySummary(null);
+        return;
+      }
+      if (e.key === 'Tab' && weeklySummaryRef.current) {
+        const focusable = weeklySummaryRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('keydown', handleKeyDown);
+      if (previousActiveElement) {
+        previousActiveElement.focus();
+      }
+    };
+  }, [weeklySummary]);
 
   // Apply dark/light theme to document elements
   useEffect(() => {
@@ -412,7 +468,10 @@ export default function App() {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 9998, padding: '1.5rem'
         }}>
-          <div className="weekly-summary-modal" style={{
+          <div 
+            ref={weeklySummaryRef}
+            className="weekly-summary-modal" 
+            style={{
             backgroundColor: 'var(--bg-card)',
             border: '1px solid var(--primary)',
             borderRadius: 'var(--radius-lg)',

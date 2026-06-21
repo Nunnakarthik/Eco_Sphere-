@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { X, BookOpen, Info, ShieldCheck } from 'lucide-react';
 
 interface InfoModalProps {
@@ -6,6 +7,63 @@ interface InfoModalProps {
 }
 
 export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    // Save the element that had focus before the modal opened
+    const previousActiveElement = document.activeElement as HTMLElement;
+
+    // Focus the modal container or close button initially
+    if (modalRef.current) {
+      const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length > 0) {
+        focusable[0].focus();
+      }
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey) {
+          if (document.activeElement === first) {
+            last.focus();
+            e.preventDefault();
+          }
+        } else {
+          if (document.activeElement === last) {
+            first.focus();
+            e.preventDefault();
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      if (previousActiveElement) {
+        previousActiveElement.focus();
+      }
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -30,6 +88,7 @@ export default function InfoModal({ isOpen, onClose }: InfoModalProps) {
       }}
     >
       <div 
+        ref={modalRef}
         className="modal-container"
         style={{
           backgroundColor: 'var(--bg-card)',

@@ -72,15 +72,73 @@ export default function Tracker({
 }: TrackerProps) {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
+  const pointsModalRef = useRef<HTMLDivElement>(null);
+  const badgeModalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const previousActiveElement = document.activeElement as HTMLElement;
+
     if (showBreakdown || selectedBadge !== null) {
       document.body.style.overflow = 'hidden';
+      const targetRef = showBreakdown ? pointsModalRef : badgeModalRef;
+      
+      // Delay slightly to ensure portal or overlay rendering completes
+      const timer = setTimeout(() => {
+        if (targetRef.current) {
+          const focusable = targetRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable.length > 0) {
+            focusable[0].focus();
+          }
+        }
+      }, 50);
+      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = '';
     }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (showBreakdown) setShowBreakdown(false);
+        if (selectedBadge !== null) setSelectedBadge(null);
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        const activeRef = showBreakdown ? pointsModalRef : (selectedBadge !== null ? badgeModalRef : null);
+        if (activeRef && activeRef.current) {
+          const focusable = activeRef.current.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (focusable.length === 0) return;
+
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+
+          if (e.shiftKey) {
+            if (document.activeElement === first) {
+              last.focus();
+              e.preventDefault();
+            }
+          } else {
+            if (document.activeElement === last) {
+              first.focus();
+              e.preventDefault();
+            }
+          }
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
     return () => {
       document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeyDown);
+      if (previousActiveElement) {
+        previousActiveElement.focus();
+      }
     };
   }, [showBreakdown, selectedBadge]);
 
@@ -473,10 +531,12 @@ export default function Tracker({
           animation: 'fadeIn 0.2s ease-out'
         }}>
           {/* Modal Card */}
-          <div style={{
-            backgroundColor: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-lg)',
+          <div 
+            ref={pointsModalRef}
+            style={{
+              backgroundColor: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              borderRadius: 'var(--radius-lg)',
             width: '100%',
             maxWidth: '540px',
             maxHeight: '85vh',
@@ -676,10 +736,12 @@ export default function Tracker({
             animation: 'fadeIn 0.2s ease-out'
           }}>
             {/* Modal Card */}
-            <div style={{
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-lg)',
+            <div 
+              ref={badgeModalRef}
+              style={{
+                backgroundColor: 'var(--bg-card)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-lg)',
               width: '100%',
               maxWidth: '480px',
               display: 'flex',
