@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
 import { ECO_ACTIONS, BADGES } from '../utils/constants';
 import { 
   Compass, 
@@ -12,10 +11,11 @@ import {
   Star, 
   Check,
   Lock,
-  X,
   type LucideIcon
 } from 'lucide-react';
 import type { HistoryEntry, Badge } from '../types';
+import PointsBreakdownModal from './PointsBreakdownModal';
+import BadgeDetailsModal from './BadgeDetailsModal';
 
 // ── Animated count-up hook ───────────────────────────────────────
 function useCountUp(target: number, duration = 700) {
@@ -72,73 +72,15 @@ export default function Tracker({
 }: TrackerProps) {
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<Badge | null>(null);
-  const pointsModalRef = useRef<HTMLDivElement>(null);
-  const badgeModalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const previousActiveElement = document.activeElement as HTMLElement;
-
     if (showBreakdown || selectedBadge !== null) {
       document.body.style.overflow = 'hidden';
-      const targetRef = showBreakdown ? pointsModalRef : badgeModalRef;
-      
-      // Delay slightly to ensure portal or overlay rendering completes
-      const timer = setTimeout(() => {
-        if (targetRef.current) {
-          const focusable = targetRef.current.querySelectorAll<HTMLElement>(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          if (focusable.length > 0) {
-            focusable[0].focus();
-          }
-        }
-      }, 50);
-      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = '';
     }
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (showBreakdown) setShowBreakdown(false);
-        if (selectedBadge !== null) setSelectedBadge(null);
-        return;
-      }
-
-      if (e.key === 'Tab') {
-        const activeRef = showBreakdown ? pointsModalRef : (selectedBadge !== null ? badgeModalRef : null);
-        if (activeRef && activeRef.current) {
-          const focusable = activeRef.current.querySelectorAll<HTMLElement>(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-          );
-          if (focusable.length === 0) return;
-
-          const first = focusable[0];
-          const last = focusable[focusable.length - 1];
-
-          if (e.shiftKey) {
-            if (document.activeElement === first) {
-              last.focus();
-              e.preventDefault();
-            }
-          } else {
-            if (document.activeElement === last) {
-              first.focus();
-              e.preventDefault();
-            }
-          }
-        }
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-
     return () => {
       document.body.style.overflow = '';
-      document.removeEventListener('keydown', handleKeyDown);
-      if (previousActiveElement) {
-        previousActiveElement.focus();
-      }
     };
   }, [showBreakdown, selectedBadge]);
 
@@ -512,394 +454,24 @@ export default function Tracker({
       </div>
     </div>
 
-      {/* Points Breakdown Modal Overlay */}
-      {showBreakdown && createPortal(
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.75)',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: '1.5rem',
-          animation: 'fadeIn 0.2s ease-out'
-        }}>
-          {/* Modal Card */}
-          <div 
-            ref={pointsModalRef}
-            style={{
-              backgroundColor: 'var(--bg-card)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-lg)',
-            width: '100%',
-            maxWidth: '540px',
-            maxHeight: '85vh',
-            display: 'flex',
-            flexDirection: 'column',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4)',
-            overflow: 'hidden',
-            animation: 'scaleIn 0.2s ease-out'
-          }}>
-            {/* Header */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '1.25rem 1.5rem',
-              borderBottom: '1px solid var(--border)'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Star size={20} fill="var(--primary)" color="var(--primary)" />
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>Eco Points Achievement Log</h3>
-              </div>
-              <button 
-                id="points-breakdown-close-x"
-                onClick={() => setShowBreakdown(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--text-muted)',
-                  cursor: 'pointer',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: '50%',
-                  transition: 'background-color 0.2s',
-                  width: 'auto'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-app)'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                <X size={20} />
-              </button>
-            </div>
+      <PointsBreakdownModal
+        isOpen={showBreakdown}
+        onClose={() => setShowBreakdown(false)}
+        points={points}
+        todayHabitsPoints={todayHabitsPoints}
+        todayActions={todayActions}
+        pastHabitsPoints={pastHabitsPoints}
+        pastActionsList={pastActionsList}
+        quizPoints={quizPoints}
+        perfectQuizzesCount={perfectQuizzesCount}
+        adjustmentPoints={adjustmentPoints}
+      />
 
-            {/* Scrollable Content */}
-            <div style={{ padding: '1.5rem', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
-              
-              {/* Total Summary Banner */}
-              <div style={{
-                backgroundColor: 'var(--bg-app)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '1.25rem',
-                textAlign: 'center',
-                border: '1px solid var(--border)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center'
-              }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Total Eco Points Earned</span>
-                <span style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary)', fontFamily: 'var(--font-heading)' }}>{points}</span>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Here is a detailed breakdown of your environmental achievements:</span>
-              </div>
-
-              {/* Today's Habits section */}
-              <div>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Today's Habits</span>
-                  <span style={{ fontSize: '0.85rem', color: 'var(--text-main)' }}>+{todayHabitsPoints} pts</span>
-                </h4>
-                {todayActions.length === 0 ? (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', paddingLeft: '0.5rem' }}>No habits completed today yet.</div>
-                ) : (
-                  <div style={{ display: 'grid', gap: '0.4rem' }}>
-                    {todayActions.map(action => (
-                      <div key={action.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.825rem', padding: '0.4rem 0.5rem', backgroundColor: 'var(--primary-light)', borderRadius: '4px', borderLeft: '3px solid var(--primary)' }}>
-                        <span style={{ color: 'var(--text-main)', paddingRight: '0.5rem' }}>{action.name}</span>
-                        <span style={{ fontWeight: 600, color: 'var(--primary)', flexShrink: 0 }}>+{action.points} pts</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Past Habits section */}
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Past Habits (All-Time)</span>
-                  <span style={{ fontSize: '0.85rem' }}>+{pastHabitsPoints} pts</span>
-                </h4>
-                {pastActionsList.length === 0 ? (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', paddingLeft: '0.5rem' }}>No historical habits logged yet.</div>
-                ) : (
-                  <div style={{ display: 'grid', gap: '0.4rem' }}>
-                    {pastActionsList.map(item => (
-                      <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.825rem', padding: '0.4rem 0.5rem', backgroundColor: 'var(--bg-app)', border: '1px solid var(--border)', borderRadius: '4px' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column' }}>
-                          <span style={{ color: 'var(--text-main)' }}>{item.name}</span>
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Logged {item.count} time{item.count > 1 ? 's' : ''} ({item.pointsPerItem} pts each)</span>
-                        </div>
-                        <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>+{item.totalPoints} pts</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Trivia Quizzes section */}
-              <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span>Trivia Quizzes</span>
-                  <span style={{ fontSize: '0.85rem' }}>+{quizPoints} pts</span>
-                </h4>
-                {perfectQuizzesCount === 0 ? (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontStyle: 'italic', paddingLeft: '0.5rem' }}>No perfect quiz completions yet.</div>
-                ) : (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.825rem', padding: '0.4rem 0.5rem', backgroundColor: 'var(--bg-app)', border: '1px solid var(--border)', borderRadius: '4px' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                      <span style={{ color: 'var(--text-main)' }}>Perfect Score Daily Quizzes</span>
-                      <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Completed {perfectQuizzesCount} quiz{perfectQuizzesCount > 1 ? 'zes' : ''} with 100% (1 pt each)</span>
-                    </div>
-                    <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>+{quizPoints} pts</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Adjustment / Welcome Bonus section if present */}
-              {adjustmentPoints !== 0 && (
-                <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-                  <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span>Welcome & Achievement Bonuses</span>
-                    <span style={{ fontSize: '0.85rem' }}>{adjustmentPoints > 0 ? `+${adjustmentPoints}` : adjustmentPoints} pts</span>
-                  </h4>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.825rem', padding: '0.4rem 0.5rem', backgroundColor: 'var(--bg-app)', border: '1px solid var(--border)', borderRadius: '4px' }}>
-                    <span style={{ color: 'var(--text-muted)' }}>Profile sign-up & badge rewards</span>
-                    <span style={{ fontWeight: 600, color: 'var(--text-main)' }}>{adjustmentPoints > 0 ? `+${adjustmentPoints}` : adjustmentPoints} pts</span>
-                  </div>
-                </div>
-              )}
-
-            </div>
-
-            {/* Footer */}
-            <div style={{
-              padding: '1rem 1.5rem',
-              borderTop: '1px solid var(--border)',
-              display: 'flex',
-              justifyContent: 'flex-end',
-              backgroundColor: 'var(--bg-app)'
-            }}>
-              <button 
-                id="points-breakdown-close-btn"
-                className="btn btn-secondary"
-                onClick={() => setShowBreakdown(false)}
-                style={{ width: 'auto', padding: '0.5rem 1.25rem', fontSize: '0.85rem', margin: 0 }}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
-      {/* Achievement Details Modal Overlay */}
-      {selectedBadge !== null && (() => {
-        const isUnlocked = unlockedBadgeIds.includes(selectedBadge.id);
-        const IconComp = BadgeIcons[selectedBadge.iconName] || Award;
-        
-        const cheerUpMessages: Record<string, string> = {
-          'starter': 'Welcome to your green journey, buddy! You\'ve taken the first step by calculating your footprint. Keep it up! 🌿',
-          'commuter': 'Well done buddy! You\'re saving emissions and staying active. Keep up the active commuting! 🚲',
-          'chef': 'Superb job, buddy! Eating plant-based makes a massive difference for the planet. Keep cooking green! 🥗',
-          'energy': 'Watt a champion! You\'re mastering electricity efficiency. Keep up the power-saving wizardry! ⚡',
-          'scholar': 'Brilliant mind! You scored 100% on the trivia quiz. Keep sharing your knowledge and keeping the planet smart! 🎓',
-          'trivia-master': 'Fantastic dedication, buddy! You are a daily learning master. Keep testing your climate wits! 📚',
-          'grandmaster': 'Legendary score, buddy! Three perfect daily quizzes. You are officially an eco expert! 🏆',
-          'champion': 'Incredible milestone, buddy! You\'ve reached a 5-day streak or 100 points. You are a true leader of the green movement! ⭐'
-        };
-
-        const cheerUp = cheerUpMessages[selectedBadge.id] || 'Fantastic progress, buddy! Keep up the amazing work! 🌟';
-
-        return createPortal(
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(15, 23, 42, 0.75)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '1.5rem',
-            animation: 'fadeIn 0.2s ease-out'
-          }}>
-            {/* Modal Card */}
-            <div 
-              ref={badgeModalRef}
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                border: '1px solid var(--border)',
-                borderRadius: 'var(--radius-lg)',
-              width: '100%',
-              maxWidth: '480px',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4)',
-              overflow: 'hidden',
-              animation: 'scaleIn 0.2s ease-out'
-            }}>
-              {/* Header */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '1.25rem 1.5rem',
-                borderBottom: '1px solid var(--border)'
-              }}>
-                <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  Achievement Details
-                </span>
-                <button 
-                  id="badge-detail-close-x"
-                  onClick={() => setSelectedBadge(null)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--text-muted)',
-                    cursor: 'pointer',
-                    padding: '4px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: '50%',
-                    transition: 'background-color 0.2s',
-                    width: 'auto'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--bg-app)'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              {/* Content */}
-              <div style={{ padding: '2rem 1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '1.25rem' }}>
-                
-                {/* Badge Icon wrapper */}
-                <div
-                  style={{
-                    width: '72px',
-                    height: '72px',
-                    borderRadius: '50%',
-                    backgroundColor: isUnlocked ? 'var(--primary-light)' : 'var(--border)',
-                    color: isUnlocked ? 'var(--primary)' : 'var(--text-muted)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    transition: 'all 0.2s ease',
-                    boxShadow: isUnlocked ? '0 0 15px rgba(16, 185, 129, 0.35)' : 'none',
-                    position: 'relative'
-                  }}
-                >
-                  <IconComp size={36} />
-                  {!isUnlocked && (
-                    <div style={{
-                      position: 'absolute',
-                      bottom: '-2px',
-                      right: '-2px',
-                      backgroundColor: 'var(--bg-card)',
-                      border: '1px solid var(--border)',
-                      borderRadius: '50%',
-                      padding: '4px',
-                      display: 'flex',
-                      color: 'var(--text-muted)'
-                    }}>
-                      <Lock size={12} />
-                    </div>
-                  )}
-                </div>
-
-                {/* Info Text */}
-                <div>
-                  <h3 style={{ fontSize: '1.4rem', fontWeight: 800, margin: '0 0 0.25rem 0', color: 'var(--text-main)' }}>
-                    {selectedBadge.name}
-                  </h3>
-                  <span style={{ 
-                    fontSize: '0.75rem', 
-                    fontWeight: 700, 
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px',
-                    color: isUnlocked ? 'var(--primary)' : 'var(--text-muted)',
-                    backgroundColor: isUnlocked ? 'var(--primary-light)' : 'var(--bg-app)',
-                    padding: '2px 8px',
-                    borderRadius: '50px',
-                    border: isUnlocked ? '1px solid var(--primary)' : '1px solid var(--border)'
-                  }}>
-                    {isUnlocked ? 'Unlocked' : 'Locked'}
-                  </span>
-                </div>
-
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-main)', margin: 0 }}>
-                  <strong>How to unlock:</strong> {selectedBadge.description}
-                </p>
-
-                {/* Cheerup / Motivational banner */}
-                <div style={{
-                  padding: '1.25rem',
-                  backgroundColor: isUnlocked ? 'var(--primary-light)' : 'var(--bg-app)',
-                  border: isUnlocked ? '1px solid var(--primary)' : '1px solid var(--border)',
-                  borderRadius: 'var(--radius-md)',
-                  color: 'var(--text-main)',
-                  fontSize: '0.925rem',
-                  lineHeight: '1.5',
-                  fontWeight: 500,
-                  textAlign: 'left',
-                  boxShadow: 'var(--shadow-sm)',
-                  width: '100%'
-                }}>
-                  {isUnlocked ? (
-                    <span>
-                      <strong style={{ color: 'var(--primary)', display: 'block', fontSize: '1.05rem', marginBottom: '0.25rem' }}>
-                        🎉 Achievement Unlocked!
-                      </strong>
-                      {cheerUp}
-                    </span>
-                  ) : (
-                    <span>
-                      <strong style={{ color: 'var(--text-muted)', display: 'block', fontSize: '1.05rem', marginBottom: '0.25rem' }}>
-                        🔒 Locked Achievement
-                      </strong>
-                      This badge is locked, but you are getting closer every day! Complete the requirements above to unlock it. You've got this, buddy!
-                    </span>
-                  )}
-                </div>
-
-              </div>
-
-              {/* Footer */}
-              <div style={{
-                padding: '1rem 1.5rem',
-                borderTop: '1px solid var(--border)',
-                display: 'flex',
-                justifyContent: 'flex-end',
-                backgroundColor: 'var(--bg-app)'
-              }}>
-                <button 
-                  id="badge-detail-close-btn"
-                  className="btn btn-secondary"
-                  onClick={() => setSelectedBadge(null)}
-                  style={{ width: 'auto', padding: '0.5rem 1.25rem', fontSize: '0.85rem', margin: 0 }}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>,
-          document.body
-        );
-      })()}
+      <BadgeDetailsModal
+        badge={selectedBadge}
+        unlockedBadgeIds={unlockedBadgeIds}
+        onClose={() => setSelectedBadge(null)}
+      />
     </>
   );
 }
